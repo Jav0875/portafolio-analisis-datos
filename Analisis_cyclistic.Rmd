@@ -1,0 +1,284 @@
+---
+title: "Análisis Ciclystic 2025"
+author: "Javier Villazana"
+date: "2025-04-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+## **Introducción**
+
+En este caso práctico se tiene una empresa ficticia de nombre Cyclistic en la cual hay diferentes personajes y miembros de equipo las cuales se debe responder a preguntas clave de la empresa desea conocer lo cual nos enfocaremos en los pasos del proceso del análisis de datos que son: preguntar, preparar, procesar, analizar, compartir y actuar.
+
+### **Escenario**
+
+La empresa Cyclistic ubicada en Chicago se dedica a las bicicletas compartidas, sus clientes son usuarios ocasionales y usuarios con membresía. La directora de marketing considera que el futuro y crecimiento de la empresa depende de maximizar la cantidad de membresías anuales. Desea entender la diferencia entre el uso de los ciclistas ocasionales y los ciclistas con membresía.
+
+### **Personajes y equipo**
+
+*  **Cyclistic:** Cuenta con 5,800 bicicletas y 600 estaciones, ofrecen bicicletas recicladas, triciclos manuales y bicicletas de carga, cuentan con un servicio exclusivo para personas con discapacidad y ciclistas que no pueden utilizar bicicletas de dos ruedas. El mayor uso se basa en bicicletas tradicionales, un 8% de los ciclistas usan opciones asistidas. La mayoría de los usuarios utilizan las bicicletas para recreación y un 30% las utiliza para transporte hacia sus trabajos.
+
+* **Lily Moreno.** Directora de marketing y mi gerente. Lily es responsable del desarrollo de la campaña e iniciativas para promover el programa de bicicletas compartidas.
+
+* **Equipo de análisis computacional de datos de marketing de Cyclistic.** Equipo de analistas que se encarga de recopilar, analizar e informar datos sobre la estrategia de marketing.
+
+* **Equipo ejecutivo de Cyclistic:** Equipo ejecutivo, que es muy detallista y son los decisores finales del programa de marketing.
+
+### **Situación del presente análisis.**
+
+En 2016 Cyclistic lanzó una oferta de bicicletas compartidas. Desde entonces, el programa creció hasta alcanzar una flota de 5,824 bicicletas georreferenciadas y bloqueadas en una red de 692 estaciones en toda Chicago. Las bicicletas se pueden desbloquear desde una estación y devolverse en cualquier otra estación del sistema en cualquier momento.
+Los analistas financieros consideran que los ciclistas anuales tienen más utilidad que los ciclistas ocasionales. Por otra parte, Lily Moreno cree que maximizar el número de miembros anuales es la clave para la expansión de Cyclistic y no enfocarse en clientes nuevos. También considera que hay posibilidades de convertir ciclistas ocasionales a ciclistas anuales. Sin embargo requiere de saber el comportamiento de las diferencias entre ambos casos con datos históricos de viajes de sus clientes para identificar la tendencia.
+
+## **Fases de análisis**
+
+### **Preguntar**
+
+La directora de marketing Lily Moreno me asigna la pregunta
+¿En qué se diferencian los socios anuales y los ciclistas ocasionales con respecto al uso de las bicicletas de Cyclistic?
+
+### **Preparar**
+
+Se solicita trabajar con datos históricos de los viajes de los usuarios de Cyclistic para analizar y analizar las tendencias de los últimos doce meses. Siguiendo la liga de descarga proporcionada se descarga un archivo con extensión .zip. Se descargan archivos que van por fechas de 202403-divvy-tripdata.zip al archivo 202503-divvy-tripdata.zip. Los datos se extraen con extensión .csv, mismos que se almacenan en una carpeta donde ubicamos la información. Cabe mencionara que los datos están identificados de por lo que es de fácil acceso a su identificación y credibilidad de los mismos dado que son datos historicos de la propia empresa
+Se almacena en una carpeta de nombre Cyclistic y se renombra el nombre del archivo como “202403_Cyclistic.csv” y así de forma descendente hasta completar los doce meses previos, es decir, hasta 202503_Cyclistic. Se abren los archivos en Visual Studio Code para visualizar los datos. Verifico las columnas que estén debidamente escritas sin caracteres especiales para que no causen problemas al momento de trabajar con los archivos. Las columnas que conforman los archivo son:
+
+* ride_id
+* rideable_type
+* started_at
+* ended_at
+* start_station_name
+* start_station_id
+* end_station_name
+* end_station_id
+* start_lat
+* start_lng
+* end_lat
+* end_lng
+* member_casual
+
+### **Procesar**
+
+Considerando que los archivos .csv son muy grandes para trabajarlos en hojas de cálculo y uno por uno, hacer la limpieza de datos y operaciones sobre los datos que vamos obteniendo para después unificarlo en un solo archivo para después trabajarlo en SQL o R, se puede convertir en una actividad laboriosa.
+Por estos motivos se trabajó el análisis de datos con el lenguaje R. Se unificaron los 12 archivos en un solo date frame  de nombre **all_rides.** Se consideraron librerías para el manejo de grandes cantidades de datos, y limpieza de datos, de ahí empezar con la manipulación de los datos. Así como la velocidad de procesamiento de grandes cantidades de datos sin interrupciones o manipular datos desde un conjunto de datos.
+
+### **Carga de paquetes, librerias y datos**
+
+```{r datos, output="hide"}
+# Aquí va tu código para cargar las librerías y los datos
+#install.packages("tidyverse", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+#install.packages("dplyr", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+#install.packages("lubridate", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+#install.packages("ggplot2", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+#install.packages("data.table", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+#install.packages("vroom", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+
+
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(data.table)
+library(vroom)
+
+# Lista de archivos csv
+archivos_csv <- list.files(path = 'C:/Users/DELL/Documents/Certificaciones/Certificacion Google/Modulo_8/Caso_practico_1/csv',pattern = "*.csv", full.names = TRUE)
+# Lee todos los archivos y se combinan en un solo DF
+all_rides <- vroom(archivos_csv, delim = ",", col_names = TRUE)
+```
+El resumen de la ejecución del código nos una que tenemos un total de 13 columnas y 5,929,375 renglones que es la suma de los datos de los 12 archivos, se utilizó la sentencia vromm para delimitar con comas (,) las columnas
+
+#### Columnas de tipo char
+
+- ride_id
+- rideable_type
+- start_station_name
+- start_station_id
+- end_station_name
+- end_station_id
+- member_casual
+
+#### Columnas de tipo double
+- start_lat
+- star_lng
+- end_lat
+- end_lng
+
+#### Columnas de tipo fecha y hora
+- started_at
+- ended_at
+
+
+### **Limpieza y transformación de datos**
+
+En esta fase existen diferentes tipos de formatos de fecha, y se tuvo que unificar en un solo formato para no alterar la información, así como celdas en cero por tener invertidas las celdas, mismas que se filtraron para no alterar la información no se consideraron dado que no se supo el verdadero valor de la información y la cantidad no es representativa para el análisis realizado en las diferentes gráficas y tablas que acabamos de realizar.
+
+``` {r limpieza}
+all_rides <- all_rides %>%
+  mutate(started_at = ymd_hms(started_at, quiet = TRUE)) %>%
+  mutate(started_at = if_else(is.na(started_at), mdy_hms(started_at, quiet = TRUE), started_at)) %>%
+  mutate(ended_at = ymd_hms(ended_at, quiet = TRUE)) %>%
+  mutate(ended_at = if_else(is.na(ended_at), mdy_hms(ended_at, quiet = TRUE), ended_at)) %>%
+  mutate(ride_length_seconds = as.numeric(ended_at - started_at)) %>%
+  mutate(day_of_week = format(started_at, "%A")) %>%
+  mutate(month = format(started_at, "%B")) %>%
+  mutate(season = case_when(
+    month %in% c("diciembre", "enero", "febrero") ~ "Invierno",
+    month %in% c("marzo", "abril", "mayo") ~ "Primavera",
+    month %in% c("junio", "julio", "agosto") ~ "Verano",
+    month %in% c("septiembre", "octubre", "noviembre") ~ "Otoño")) %>%
+  filter(ride_length_seconds > 0) %>%
+  mutate(day_of_week_num = wday(started_at)) %>%
+  mutate(day_of_week_es = case_when(
+    day_of_week_num == 1 ~ "domingo",
+    day_of_week_num == 2 ~ "lunes",
+    day_of_week_num == 3 ~ "martes",
+    day_of_week_num == 4 ~ "miércoles",
+    day_of_week_num == 5 ~ "jueves",
+    day_of_week_num == 6 ~ "viernes",
+    day_of_week_num == 7 ~ "sábado",
+    TRUE ~ NA_character_
+  )) %>%
+  mutate(day_of_week_es = factor(day_of_week_es, levels = c("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"))) %>%
+  mutate(hour_started = hour(started_at))
+
+head(all_rides)
+glimpse(all_rides)
+```
+Se realiza la limpieza y creación de las variables para el análisis de datos.
+El formato de columnas de fecha y hora lo realizó la sentencia vrom por lo que ya no es necesario modificar el formato de las columnas started_at y ended_at. Se crearon nuevas columnas
+
+- **ride_length_seconds.** Tiempo de duración del viaje 
+- **day_of_week.** Dia de la semana en que se realizó el viaje 
+- **season.** Temporada del año para saber el comportamiento de los viajes.  
+
+Se guarda el script en la ubicación donde se tiene almacenada la información de los meses de la empresa.
+
+### **Análisis de los datos**
+
+En esta parte se empieza a responder la pregunta. **¿En qué se diferencian los socios anuales y los ciclistas ocasionales con respecto al uso de las bicicletas de Cyclistic?**
+Se realiza el cálculo de los viajes realiza cada usuario, es decir, los usuario de membresía anual y ciclistas ocasionales dando los siguientes resultados.
+
+#### **Número Total de Viajes por Tipo de Usuario**
+
+``` {r a}
+trips_by_user <- all_rides %>%
+  group_by(member_casual) %>%
+  summarise(number_of_trips = n())
+print(trips_by_user)
+
+ggplot(trips_by_user, aes(x = member_casual, y = number_of_trips, fill = member_casual)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Número Total de Viajes por Tipo de Usuario",
+       x = "Tipo de Usuario",
+       y = "Número de Viajes") +
+  scale_fill_manual(values = c("casual" = "skyblue", "member" = "salmon")) +
+  theme_minimal()
+```
+
+#### **Duración Promedio del Viaje por Tipo de Usuario**
+``` {r b}
+averange_duration_by_user <- all_rides %>%
+  group_by(member_casual) %>%
+  summarise(averange_duration_seconds = mean(ride_length_seconds, na.rm = TRUE)) %>%
+  mutate(average_duration_minutes = averange_duration_seconds / 60)
+print(averange_duration_by_user)
+```
+
+#### **Uso por día de la semana**
+
+``` {r c}
+usage_by_weekday <- all_rides %>%
+  group_by(member_casual, day_of_week_es) %>%
+  summarise(number_of_trips = n()) %>%
+  ungroup()
+print(usage_by_weekday)
+
+ggplot(usage_by_weekday, aes(x = day_of_week_es, y = number_of_trips, fill = member_casual)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Número de Viajes por Día de la Semana y Tipo de Usuario",
+       x = "Día de la Semana",
+       y = "Número de Viajes",
+       fill = "Tipo de Usuario") +
+  scale_x_discrete(limits = c("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")) +
+  scale_fill_manual(values = c("casual" = "skyblue", "member" = "salmon")) +
+  theme_minimal()
+```
+
+### **Uso por temporada del año**
+``` {r d}
+usage_by_season <- all_rides %>%
+  group_by(member_casual, season) %>%
+  summarise(number_of_trips = n()) %>%
+  ungroup()
+print(usage_by_season)
+
+ggplot(usage_by_season, aes(x = season, y = number_of_trips, fill = member_casual)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Número de Viajes por Temporada y Tipo de Usuario",
+       x = "Temporada",
+       y = "Número de Viajes",
+       fill = "Tipo de Usuario") +
+  theme_minimal()
+```
+
+### **Duración promedio por dia de la semana**
+
+``` {r e}
+average_duration_by_weekday <- all_rides %>%
+  group_by(member_casual, day_of_week_es) %>%
+  summarise(average_duration_seconds = mean(ride_length_seconds, na.rm = TRUE)) %>%
+  mutate(average_duration_minutes = average_duration_seconds / 60) %>%
+  ungroup()
+print(average_duration_by_weekday)
+
+ggplot(average_duration_by_weekday, aes(x = day_of_week_es, y = average_duration_minutes, fill = member_casual)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Duración Promedio del Viaje por Día de la Semana y Tipo de Usuario",
+       x = "Día de la Semana",
+       y = "Duración Promedio (minutos)",
+       fill = "Tipo de Usuario") +
+  scale_x_discrete(limits = c("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")) +
+  scale_fill_manual(values = c("casual" = "skyblue", "member" = "salmon")) +
+  theme_minimal()
+```
+
+### **Uso por hora del dia**
+``` {r f}
+usage_by_hour <- all_rides %>%
+  group_by(member_casual, hour_started) %>%
+  summarise(number_of_trips = n()) %>%
+  ungroup()
+print(usage_by_hour)
+
+ggplot(usage_by_hour, aes(x = hour_started, y = number_of_trips, color = member_casual)) +
+  geom_line(linewidth = 1.5) +
+  labs(title = "Número de Viajes por Hora del Día y Tipo de Usuario",
+       x = "Hora del Día",
+       y = "Número de Viajes",
+       color = "Tipo de Usuario") +
+  scale_x_continuous(breaks = 0:23) +
+  scale_color_manual(values = c("casual" = "skyblue", "member" = "salmon")) +
+  theme_minimal()
+```
+
+### **Conclusiones**
+Con base en el análisis realizado, podemos observar algunas diferencias clave en el comportamiento de uso dentre los socios anuales y los ciclistas ocasionales el cual se detalla a continuación
+
+* **Socios anuales.** Estos ciclistas realizan el mayor número de viajes, por lo que el uso es mas frecuente y con desplazamientos diarios, puede ser el traslado de su casa al trabajo
+
+* **Ciclistas ocasionales.** Sus vaijes que realizan son de mayor duracion considerando el tiempo de traslado o uso, por lo que puede ser usadas las bicicletas para explorar la ciudad o de manera recreativa.
+
+* El uso por dia de la semana en los socios anuales tienen un uso relativamente constante durante la semana con picos en los días laborales, mientras que los ciclistas ocasionales muestran un aumento notable en los viajes los fines de semana.
+
+* Se observan patrones de uso por hora del día revelan picos más definidos para los socios anuales y un uso más distribuido a lo largo del día para los ciclistas ocasionales, con picos durante las horas centrales del día.
+
+### **Recomendaciones**
+
+Recomendamos considerar las siguientes estrategias:
+
+- **Marketing Diferenciado:** Desarrollar campañas de marketing específicas para cada grupo, resaltando los beneficios de la membresía para los usuarios frecuentes y promocionando pases flexibles y experiencias para los usuarios ocasionales.
+- **Optimización de la Flota:** Ajustar la disponibilidad de bicicletas en diferentes ubicaciones y horarios según los patrones de uso identificados para cada grupo.
+- **Programas de Fidelización:** Implementar programas de fidelización para socios anuales para fomentar la retención.
+- **Ofertas para Usuarios Ocasionales:** Explorar ofertas especiales o descuentos para viajes más largos o de fin de semana para atraer y retener a los ciclistas ocasionales.
