@@ -66,13 +66,13 @@ Por estos motivos se trabajó el análisis de datos con el lenguaje R. Se unific
 ### **Carga de paquetes, librerias y datos**
 
 ```{r datos, output="hide"}
-# Aquí va tu código para cargar las librerías y los datos
-#install.packages("tidyverse", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
-#install.packages("dplyr", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
-#install.packages("lubridate", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
-#install.packages("ggplot2", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
-#install.packages("data.table", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
-#install.packages("vroom", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+
+install.packages("tidyverse", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+install.packages("dplyr", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+install.packages("lubridate", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+install.packages("ggplot2", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+install.packages("data.table", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
+install.packages("vroom", repos = "[https://cran.rstudio.com/](https://cran.rstudio.com/)")
 
 
 library(tidyverse)
